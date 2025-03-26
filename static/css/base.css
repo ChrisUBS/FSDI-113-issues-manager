@@ -1,0 +1,59 @@
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f6f9;
+}
+
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+}
+
+.sidebar {
+    background-color: white;
+    border-right: 1px solid #e9ecef;
+    min-height: 100vh;
+}
+
+.issue-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-open { 
+    background-color: #28a745;
+    color: white;
+}
+
+.status-in-progress { 
+    background-color: #ffc107;
+    color: black;
+}
+
+.status-closed { 
+    background-color: #dc3545;
+    color: white;
+}
