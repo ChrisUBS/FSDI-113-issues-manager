@@ -10,13 +10,13 @@ body {
 
 .navbar {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card {
     border: none;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
@@ -43,17 +43,43 @@ body {
     font-weight: 600;
 }
 
-.status-open { 
+.status-open {
     background-color: #28a745;
     color: white;
 }
 
-.status-in-progress { 
+.status-in-progress {
     background-color: #ffc107;
     color: black;
 }
 
-.status-closed { 
+.status-closed {
     background-color: #dc3545;
     color: white;
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .navbar-nav .nav-item form {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .navbar-nav .nav-item form button {
+        width: 100%;
+        text-align: center;
+    }
 }

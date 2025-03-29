@@ -8,6 +8,13 @@ class Status(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Priority(models.Model):
+    name = models.CharField(max_length=128)
+    description = models.TextField(max_length=256)
+    
+    def __str__(self):
+        return self.name
 
 class Issue(models.Model):
     name = models.CharField(max_length=64)
@@ -28,6 +35,10 @@ class Issue(models.Model):
     status = models.ForeignKey(
         Status, 
         on_delete=models.CASCADE, 
+    )
+    priority = models.ForeignKey(
+        Priority,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):

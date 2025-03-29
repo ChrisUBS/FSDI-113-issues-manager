@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Open Issues{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'board' %}" class="btn btn-outline-secondary btn-sm mb-2">
+                <i class="bi bi-arrow-left"></i> Back to Board
+            </a>
+            <h1>Open Issues</h1>
+        </div>
+        <div>
+            <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+        </div>
+    </div>
+
+    <!-- Filtros y navegación -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'list' %}">All Issues</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'open_issues' %}">Open Issues</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my_issues' %}">My Issues</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reported_issues' %}">Reported by Me</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tabla de issues -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 40%">Issue</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Priority</th>
+                            <th scope="col">Reporter</th>
+                            <th scope="col">Assignee</th>
+                            <th scope="col">Created</th>
+                            <th scope="col" style="width: 100px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issues %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'detail' issue.pk %}" class="text-decoration-none">
+                                    <strong>{{ issue.name }}</strong>
+                                </a>
+                                <div class="text-muted small">{{ issue.summary }}</div>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if issue.status.name == 'to do' %}bg-secondary{% endif %}
+                                    {% if issue.status.name == 'in progress' %}bg-warning{% endif %}
+                                    {% if issue.status.name == 'done' %}bg-success{% endif %}
+                                ">
+                                    {{ issue.status.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge
+                                    {% if issue.priority|lower == 'high' %}bg-danger{% endif %}
+                                    {% if issue.priority|lower == 'medium' %}bg-warning{% endif %}
+                                    {% if issue.priority|lower == 'low' %}bg-success{% endif %}
+                                ">
+                                    {{ issue.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-placeholder me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 12px;">
+                                        {{ issue.reporter.username|first|upper }}
+                                    </div>
+                                    <span class="small">{{ issue.reporter.username }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if issue.assignee %}
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-placeholder me-2 bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 12px;">
+                                        {{ issue.assignee.username|first|upper }}
+                                    </div>
+                                    <span class="small">{{ issue.assignee.username }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-muted small">Unassigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="small text-muted">{{ issue.created_on|date:"M d, Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if request.user == issue.reporter or request.user == issue.assignee or request.user.is_staff %}
+                                    <a href="{% url 'edit' issue.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if request.user == issue.reporter or request.user.is_staff %}
+                                    <a href="{% url 'delete' issue.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <p class="text-muted mb-0">No open issues found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

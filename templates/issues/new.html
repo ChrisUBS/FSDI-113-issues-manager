@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if object %}Edit Issue{% else %}New Issue{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <a href="{% url 'board' %}" class="btn btn-outline-secondary btn-sm mb-2">
+                <i class="bi bi-arrow-left"></i> Back to Board
+            </a>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        {% if object %}Edit Issue: {{ object.name }}{% else %}Create New Issue{% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                            {{ form.name.errors }}
+                            <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}"
+                                class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.help_text %}
+                            <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.summary.id_for_label }}" class="form-label">Summary</label>
+                            {{ form.summary.errors }}
+                            <input type="text" name="{{ form.summary.name }}" id="{{ form.summary.id_for_label }}"
+                                class="form-control {% if form.summary.errors %}is-invalid{% endif %}"
+                                value="{{ form.summary.value|default:'' }}" required>
+                            {% if form.summary.help_text %}
+                            <small class="form-text text-muted">{{ form.summary.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description.errors }}
+                            <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}"
+                                class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="6"
+                                required>{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.help_text %}
+                            <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            {% if object %}
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                {{ form.status.errors }}
+                                <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}"
+                                    class="form-select {% if form.status.errors %}is-invalid{% endif %}" required>
+                                    {% for choice in form.status.field.choices %}
+                                    <option value="{{ choice.0 }}" {% if
+                                        form.status.value|stringformat:"s"==choice.0|stringformat:"s" %}selected{% endif
+                                        %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.status.help_text %}
+                                <small class="form-text text-muted">{{ form.status.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <!-- This is for creating a new issue - status will be "To Do" by default and unchangeable -->
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                <input type="text" class="form-control" value="To Do" readonly>
+                                <input type="hidden" name="{{ form.status.name }}" value="1">
+                                {% if form.status.help_text %}
+                                <small class="form-text text-muted">{{ form.status.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                                {{ form.priority.errors }}
+                                <select name="{{ form.priority.name }}" id="{{ form.priority.id_for_label }}" 
+                                        class="form-select {% if form.priority.errors %}is-invalid{% endif %}" required>
+                                    {% for choice in form.priority.field.choices %}
+                                    <option value="{{ choice.0 }}" {% if form.priority.value|stringformat:"s" == choice.0|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.priority.help_text %}
+                                <small class="form-text text-muted">{{ form.priority.help_text }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.assignee.id_for_label }}" class="form-label">Assignee</label>
+                                {{ form.assignee.errors }}
+                                <select name="{{ form.assignee.name }}" id="{{ form.assignee.id_for_label }}"
+                                    class="form-select {% if form.assignee.errors %}is-invalid{% endif %}">
+                                    <option value="">Unassigned</option>
+                                    {% for choice in form.assignee.field.choices %}
+                                    {% if not forloop.first %}
+                                    <option value="{{ choice.0 }}" {% if
+                                        form.assignee.value|stringformat:"s"==choice.0|stringformat:"s" %}selected{%
+                                        endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                                {% if form.assignee.help_text %}
+                                <small class="form-text text-muted">{{ form.assignee.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'board' %}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if object %}Update Issue{% else %}Create Issue{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

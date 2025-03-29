@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Issue Board{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Issue Board</h1>
+        <div>
+            <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            <div class="btn-group ms-2">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Views
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'list' %}">All Issues</a></li>
+                    <li><a class="dropdown-item" href="{% url 'open_issues' %}">Open Issues</a></li>
+                    <li><a class="dropdown-item" href="{% url 'my_issues' %}">My Issues</a></li>
+                    <li><a class="dropdown-item" href="{% url 'reported_issues' %}">Reported By Me</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Columna To Do -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">To Do</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for issue in to_do_list %}
+                            <li class="list-group-item">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
+                                </h6>
+                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                                    {% if issue.priority|lower == 'high' %}
+                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'medium' %}
+                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'low' %}
+                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                    {% endif %}
+                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center text-muted">No issues to do</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna In Progress -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">In Progress</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for issue in in_progress_list %}
+                            <li class="list-group-item">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
+                                </h6>
+                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                                    {% if issue.priority|lower == 'high' %}
+                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'medium' %}
+                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'low' %}
+                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                    {% endif %}
+                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center text-muted">No issues in progress</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Done -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Done</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for issue in done_list %}
+                            <li class="list-group-item">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
+                                </h6>
+                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                                    {% if issue.priority|lower == 'high' %}
+                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'medium' %}
+                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                    {% elif issue.priority|lower == 'low' %}
+                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                    {% endif %}
+                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center text-muted">No completed issues</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
