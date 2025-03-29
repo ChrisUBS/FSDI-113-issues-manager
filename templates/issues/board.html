@@ -3,56 +3,76 @@
 {% block title %}Issue Board{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid mt-4 px-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Issue Board</h1>
+        <h1 class="display-5 fw-bold"><i class="bi bi-kanban me-2"></i>Issue Board</h1>
         <div>
-            <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            {% if is_product_owner %}
+                <a href="{% url 'new' %}" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i>New Issue
+                </a>
+            {% endif %}
             <div class="btn-group ms-2">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Views
+                <button type="button" class="btn btn-outline-dark shadow-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-funnel me-1"></i>Views
                 </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'list' %}">All Issues</a></li>
-                    <li><a class="dropdown-item" href="{% url 'open_issues' %}">Open Issues</a></li>
-                    <li><a class="dropdown-item" href="{% url 'my_issues' %}">My Issues</a></li>
-                    <li><a class="dropdown-item" href="{% url 'reported_issues' %}">Reported By Me</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{% url 'list' %}"><i class="bi bi-card-list me-2"></i>All Issues</a></li>
+                    <li><a class="dropdown-item" href="{% url 'open_issues' %}"><i class="bi bi-envelope-open me-2"></i>Open Issues</a></li>
+                    <li><a class="dropdown-item" href="{% url 'my_issues' %}"><i class="bi bi-person me-2"></i>My Issues</a></li>
+                    {% if is_product_owner %}
+                    <li><a class="dropdown-item" href="{% url 'reported_issues' %}"><i class="bi bi-pencil-square me-2"></i>Reported By Me</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
         <!-- Columna To Do -->
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">To Do</h5>
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-secondary bg-gradient text-white py-3 rounded-top">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-list-task me-2 fs-5"></i>
+                        <h5 class="mb-0 fw-bold">To Do</h5>
+                        <span class="badge rounded-pill bg-light text-dark ms-auto">{{ to_do_list|length }}</span>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
                         {% for issue in to_do_list %}
-                            <li class="list-group-item">
-                                <h6 class="mb-1">
-                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
-                                </h6>
-                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                            <li class="list-group-item list-group-item-action p-3 border-start-0 border-end-0">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold">
+                                        <a href="{% url 'detail' issue.pk %}" class="text-decoration-none link-dark stretched-link">{{ issue.name }}</a>
+                                    </h6>
                                     {% if issue.priority|lower == 'high' %}
-                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                        <span class="badge bg-danger rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'medium' %}
-                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                        <span class="badge bg-warning text-dark rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'low' %}
-                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                        <span class="badge bg-success rounded-pill">{{ issue.priority }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                        <span class="badge bg-secondary rounded-pill">{{ issue.priority }}</span>
                                     {% endif %}
-                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="small text-muted mb-2 fst-italic">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="avatar bg-primary text-white rounded-circle me-1" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                                            {{ issue.reporter.username|slice:":1"|upper }}
+                                        </span>
+                                        <small class="text-muted">{{ issue.reporter }}</small>
+                                    </div>
+                                    <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ issue.created_on|date:"M d, Y" }}</small>
                                 </div>
                             </li>
                         {% empty %}
-                            <li class="list-group-item text-center text-muted">No issues to do</li>
+                            <li class="list-group-item py-4 text-center">
+                                <i class="bi bi-inbox text-muted fs-2 mb-2 d-block"></i>
+                                <p class="text-muted mb-0">No issues to do</p>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -61,34 +81,48 @@
 
         <!-- Columna In Progress -->
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">In Progress</h5>
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-warning bg-gradient text-dark py-3 rounded-top">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-arrow-repeat me-2 fs-5"></i>
+                        <h5 class="mb-0 fw-bold">In Progress</h5>
+                        <span class="badge rounded-pill bg-light text-dark ms-auto">{{ in_progress_list|length }}</span>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
                         {% for issue in in_progress_list %}
-                            <li class="list-group-item">
-                                <h6 class="mb-1">
-                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
-                                </h6>
-                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                            <li class="list-group-item list-group-item-action p-3 border-start-0 border-end-0">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold">
+                                        <a href="{% url 'detail' issue.pk %}" class="text-decoration-none link-dark stretched-link">{{ issue.name }}</a>
+                                    </h6>
                                     {% if issue.priority|lower == 'high' %}
-                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                        <span class="badge bg-danger rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'medium' %}
-                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                        <span class="badge bg-warning text-dark rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'low' %}
-                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                        <span class="badge bg-success rounded-pill">{{ issue.priority }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                        <span class="badge bg-secondary rounded-pill">{{ issue.priority }}</span>
                                     {% endif %}
-                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="small text-muted mb-2 fst-italic">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="avatar bg-primary text-white rounded-circle me-1" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                                            {{ issue.reporter.username|slice:":1"|upper }}
+                                        </span>
+                                        <small class="text-muted">{{ issue.reporter }}</small>
+                                    </div>
+                                    <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ issue.created_on|date:"M d, Y" }}</small>
                                 </div>
                             </li>
                         {% empty %}
-                            <li class="list-group-item text-center text-muted">No issues in progress</li>
+                            <li class="list-group-item py-4 text-center">
+                                <i class="bi bi-hourglass-split text-muted fs-2 mb-2 d-block"></i>
+                                <p class="text-muted mb-0">No issues in progress</p>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -97,34 +131,48 @@
 
         <!-- Columna Done -->
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Done</h5>
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-success bg-gradient text-white py-3 rounded-top">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check2-circle me-2 fs-5"></i>
+                        <h5 class="mb-0 fw-bold">Done</h5>
+                        <span class="badge rounded-pill bg-light text-dark ms-auto">{{ done_list|length }}</span>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
                         {% for issue in done_list %}
-                            <li class="list-group-item">
-                                <h6 class="mb-1">
-                                    <a href="{% url 'detail' issue.pk %}">{{ issue.name }}</a>
-                                </h6>
-                                <p class="small text-muted mb-1">{{ issue.summary }}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-info">{{ issue.reporter }}</span>
+                            <li class="list-group-item list-group-item-action p-3 border-start-0 border-end-0">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold">
+                                        <a href="{% url 'detail' issue.pk %}" class="text-decoration-none link-dark stretched-link">{{ issue.name }}</a>
+                                    </h6>
                                     {% if issue.priority|lower == 'high' %}
-                                        <span class="badge bg-danger">{{ issue.priority }}</span>
+                                        <span class="badge bg-danger rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'medium' %}
-                                        <span class="badge bg-warning">{{ issue.priority }}</span>
+                                        <span class="badge bg-warning text-dark rounded-pill">{{ issue.priority }}</span>
                                     {% elif issue.priority|lower == 'low' %}
-                                        <span class="badge bg-success">{{ issue.priority }}</span>
+                                        <span class="badge bg-success rounded-pill">{{ issue.priority }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ issue.priority }}</span>
+                                        <span class="badge bg-secondary rounded-pill">{{ issue.priority }}</span>
                                     {% endif %}
-                                    <small class="text-muted">{{ issue.created_on|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="small text-muted mb-2 fst-italic">{{ issue.summary }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="avatar bg-primary text-white rounded-circle me-1" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                                            {{ issue.reporter.username|slice:":1"|upper }}
+                                        </span>
+                                        <small class="text-muted">{{ issue.reporter }}</small>
+                                    </div>
+                                    <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ issue.created_on|date:"M d, Y" }}</small>
                                 </div>
                             </li>
                         {% empty %}
-                            <li class="list-group-item text-center text-muted">No completed issues</li>
+                            <li class="list-group-item py-4 text-center">
+                                <i class="bi bi-check2-all text-muted fs-2 mb-2 d-block"></i>
+                                <p class="text-muted mb-0">No completed issues</p>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>

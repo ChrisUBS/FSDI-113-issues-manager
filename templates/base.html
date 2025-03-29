@@ -42,13 +42,25 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'board' %}"><i class="bi bi-kanban me-1"></i> Board</a>
                     </li>
-                    <li class="nav-item">
-                        <form method="POST" action="{% url 'logout' %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link border-0 bg-transparent">
-                                <i class="bi bi-box-arrow-left me-1"></i> Log Out
-                            </button>
-                        </form>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">
+                                <i class="bi bi-key me-2"></i>Change Password
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-left me-2"></i>Log Out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                     {% else %}
                     <li class="nav-item">

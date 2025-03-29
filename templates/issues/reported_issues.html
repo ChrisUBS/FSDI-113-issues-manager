@@ -12,7 +12,9 @@
             <h1>Issues I Reported</h1>
         </div>
         <div>
-            <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            {% if is_product_owner %}
+                <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            {% endif %}
         </div>
     </div>
 

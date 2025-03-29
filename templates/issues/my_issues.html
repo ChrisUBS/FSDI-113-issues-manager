@@ -12,7 +12,9 @@
             <h1>My Issues</h1>
         </div>
         <div>
-            <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            {% if is_product_owner %}
+                <a href="{% url 'new' %}" class="btn btn-primary">New Issue</a>
+            {% endif %}
         </div>
     </div>
 
@@ -29,9 +31,11 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'my_issues' %}">My Issues</a>
                 </li>
+                {% if is_product_owner %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'reported_issues' %}">Reported by Me</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

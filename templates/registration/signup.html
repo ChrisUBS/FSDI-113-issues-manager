@@ -4,10 +4,80 @@
 {% block title %}Sign Up{% endblock title %}
 
 {% block content %}
-<h1>Sign Up</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form | crispy }}
-    <input type="submit" class="btn btn-success" value="Sign Up">
-</form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center font-weight-light my-2">
+                        <i class="bi bi-person-plus me-2"></i>Create Account
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <p>Please correct the errors below.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-person me-1"></i> Username
+                                </label>
+                                {{ form.username|as_crispy_field }}
+                            </div>
+                            
+                            {% if form.email %}
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-envelope me-1"></i> Email
+                                </label>
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-key me-1"></i> Password
+                                </label>
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-key-fill me-1"></i> Confirm Password
+                                </label>
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                            
+                            {% for field in form %}
+                                {% if field.name != 'username' and field.name != 'email' and field.name != 'password1' and field.name != 'password2' %}
+                                <div class="col-12 mb-3">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary py-2">
+                                <i class="bi bi-person-plus me-1"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-light">
+                    <div class="small">
+                        <span>Already have an account?</span>
+                        <a href="{% url 'login' %}" class="text-decoration-none">Log in!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

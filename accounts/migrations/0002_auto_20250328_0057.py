@@ -25,6 +25,57 @@ def populate_teams(apps, schemaeditor):
         team_obj = Team(name=key, description=value)
         team_obj.save()
 
+def populate_users(apps, schemaeditor):
+    CustomUser = apps.get_model("accounts", "CustomUser")
+    Role = apps.get_model("accounts", "Role")
+    Team = apps.get_model("accounts", "Team")
+    
+    # Para hashear la contraseña
+    from django.contrib.auth.hashers import make_password
+    
+    # Get roles
+    dev_role = Role.objects.get(name="developer")
+    po_role = Role.objects.get(name="product owner")
+    
+    # Get teams
+    alpha_team = Team.objects.get(name="alpha")
+    bravo_team = Team.objects.get(name="bravo")
+    
+    # Create users
+    users_data = [
+        # Product Owners
+        {"username": "juan", "first_name": "Juan", "email": "juan@gmail.com", 
+         "role": po_role, "team": alpha_team},
+        {"username": "maria", "first_name": "Maria", "email": "maria@gmail.com", 
+         "role": po_role, "team": bravo_team},
+        
+        # Alpha Team Developers
+        {"username": "pedro", "first_name": "Pedro", "email": "pedro@gmail.com", 
+         "role": dev_role, "team": alpha_team},
+        {"username": "ana", "first_name": "Ana", "email": "ana@gmail.com", 
+         "role": dev_role, "team": alpha_team},
+        
+        # Bravo Team Developers
+        {"username": "carlos", "first_name": "Carlos", "email": "carlos@gmail.com", 
+         "role": dev_role, "team": bravo_team},
+        {"username": "laura", "first_name": "Laura", "email": "laura@gmail.com", 
+         "role": dev_role, "team": bravo_team},
+    ]
+    
+    # Set password for all users to "1234"
+    hashed_password = make_password("1234")
+    
+    for user_data in users_data:
+        CustomUser.objects.create(
+            username=user_data["username"],
+            first_name=user_data["first_name"],
+            email=user_data["email"],
+            role=user_data["role"],
+            team=user_data["team"],
+            is_active=True,
+            password=hashed_password
+        )
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -34,4 +85,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(populate_roles),
         migrations.RunPython(populate_teams),
+        migrations.RunPython(populate_users),
     ]
